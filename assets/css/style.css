@@ -1,0 +1,11 @@
+.postbox-container .ui.input.fluid{
+
+    margin: 20px 0;
+
+}
+
+
+.postbox-container .ui.label {
+    background-color: #2185d0;
+    color:#ffffff;
+}

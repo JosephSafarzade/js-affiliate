@@ -1,0 +1,49 @@
+<h1>{{ page_title }}</h1>
+
+<div class="ui divider"></div>
+
+<table class="ui celled table">
+
+    <thead>
+    <tr>
+        <th>Affiliate Code</th>
+        <th>Running For</th>
+        <th>Visits</th>
+        <th>Purchase</th>
+        <th>Conversation Rate</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    {% for affiliate_item_id,affiliate_item_data in affiliate_items_data %}
+
+    <tr>
+        <td data-label="Affiliate Code">
+            <a href="{{ attribute(affiliate_item_data,'detail_link') }}" data-item-id="{{ affiliate_item_id }}">{{ attribute(affiliate_item_data,'name') }}</a>
+        </td>
+
+        <td data-label="Running For">
+            {{ attribute(affiliate_item_data,'running_for') }} Days
+        </td>
+
+        <td data-label="Visits">
+            {{ attribute(affiliate_item_data,'visits') }}
+        </td>
+
+        <td data-label="Purchase">
+            {{ attribute(affiliate_item_data,'purchases') }}
+        </td>
+
+        <td data-label="Conversation Rate">
+            {{ attribute(affiliate_item_data,'conversation') }}%
+        </td>
+
+    </tr>
+
+
+    {% endfor %}
+
+    </tbody>
+
+</table>

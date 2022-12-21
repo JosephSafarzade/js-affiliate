@@ -6,7 +6,18 @@ class js_affiliate_post_type
 
     public function __construct(){
 
-        add_action( 'init', array(__CLASS__,'js_aff_create_affiliate_post_type') );
+        add_action( 'init', array($this,'js_aff_create_affiliate_post_type'),0 );
+
+        add_action( 'init', array($this,'js_aff_create_affiliate_source_taxonomy'), 0 );
+
+        add_action( 'manage_posts_custom_column',array($this,'js_action_custom_columns_content'), 10, 2 );
+
+        add_filter('manage_js_aff_posts_columns',array($this,'js_filter_columns') );
+
+        add_filter('manage_edit-js_aff_sortable_columns',array($this,'js_set_sortable_columns'));
+
+        add_action( 'pre_get_posts', array($this,'js_sort_custom_column_query') );
+
 
     }
 
@@ -57,6 +68,119 @@ class js_affiliate_post_type
         register_post_type( 'js_aff', $args );
 
     }
+
+
+
+
+    public function js_aff_create_affiliate_source_taxonomy(){
+
+        $labels = array(
+            'name'              => _x( 'Sources', 'taxonomy general name', 'js-affiliate' ),
+            'singular_name'     => _x( 'Source', 'taxonomy singular name', 'js-affiliate' ),
+            'search_items'      => __( 'Search Sources', 'js-affiliate' ),
+            'all_items'         => __( 'All Sources', 'js-affiliate' ),
+            'view_item'         => __( 'View Source', 'js-affiliate' ),
+            'parent_item'       => __( 'Parent Source', 'js-affiliate' ),
+            'parent_item_colon' => __( 'Parent Source:', 'js-affiliate' ),
+            'edit_item'         => __( 'Edit Source', 'js-affiliate' ),
+            'update_item'       => __( 'Update Source', 'js-affiliate' ),
+            'add_new_item'      => __( 'Add New Source', 'js-affiliate' ),
+            'new_item_name'     => __( 'New Genre Source', 'js-affiliate' ),
+            'not_found'         => __( 'No Genres Source', 'js-affiliate' ),
+            'back_to_items'     => __( 'Back to Source', 'js-affiliate' ),
+            'menu_name'         => __( 'Source', 'js-affiliate' ),
+        );
+
+        $args = array(
+            'labels'            => $labels,
+            'hierarchical'      => false,
+            'public'            => true,
+            'show_ui'           => true,
+            'show_admin_column' => false,
+            'query_var'         => true,
+            'rewrite'           => array( 'slug' => 'source' ),
+            'show_in_rest'      => true,
+        );
+
+        register_taxonomy( 'js_aff_source', 'js_aff', $args );
+
+
+    }
+
+
+
+    function js_filter_columns( $columns ) {
+        // this will add the column to the end of the array
+        unset($columns['date']);
+
+        $columns['source'] = 'Source Type';
+
+        $columns['date'] = 'Date';
+        //add more columns as needed
+
+        // as with all filters, we need to return the passed content/variable
+        return $columns;
+    }
+
+
+    function js_action_custom_columns_content ( $column_id, $post_id ) {
+
+        if($column_id == 'source'){
+
+            $meta_value = get_post_meta($post_id,'js_aff_source_name',true);
+
+            if( $meta_value == '' ){
+
+                $meta_value = '-';
+
+            } else {
+
+                $meta_value = get_term_by('id',$meta_value,'js_aff_source')->name;
+
+            }
+
+            echo $meta_value;
+
+        }
+
+    }
+
+
+
+    function js_set_sortable_columns( $columns )
+    {
+
+        $columns['source'] = 'Source Type';
+
+        return $columns;
+    }
+
+
+
+    function js_sort_custom_column_query( $query )
+    {
+        $orderby = $query->get( 'orderby' );
+
+        if ( 'source' == $orderby ) {
+
+            $meta_query = array(
+                'relation' => 'OR',
+                array(
+                    'key' => 'js_aff_source_name',
+                    'compare' => 'NOT EXISTS', // see note above
+                ),
+                array(
+                    'key' => 'js_aff_source_name',
+                ),
+            );
+
+            $query->set( 'meta_query', $meta_query );
+
+            $query->set( 'orderby', 'meta_value' );
+
+        }
+    }
+
 
 
 

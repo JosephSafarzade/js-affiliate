@@ -4,11 +4,15 @@
 class js_affiliate_meta_box
 {
 
-    public object $js_affiliate_form_inputs;
+    public object $js_affiliate_core_functions;
+
+    public object $js_affiliate_html_templates;
 
     public function __construct(){
 
-        $this->js_affiliate_form_inputs = new js_affiliate_form_inputs();
+        $this->js_affiliate_html_templates = new js_affiliate_html_templates();
+
+        $this->js_affiliate_core_functions = new js_affiliate_core_functions();
 
         add_action( 'add_meta_boxes', array($this,'js_aff_register_js_aff_post_type_metabox') );
 
@@ -40,26 +44,42 @@ class js_affiliate_meta_box
         wp_nonce_field( 'js_aff_save_metabox', 'js_aff_metabox' );
 
 
-        $this->js_affiliate_form_inputs->create_text_input_with_label(
-            array(
+        echo $this->js_affiliate_html_templates->twig->render(
+            'affiliate_text_input_with_label.twig',
+            [
                 "label"         => 'Affiliate Title : ',
                 "id"            => 'affiliate-title',
                 "name"          => 'affiliate-title',
                 "placeholder"   => 'Affiliate Title',
                 "value"         => $post_meta['affiliate-title'][0]
-            )
+            ]
         );
 
 
-        $this->js_affiliate_form_inputs->create_text_input_with_label(
-            array(
-                "label"         => 'Redirect To : ',
-                "id"            => 'affiliate-redirect-to',
-                "name"          => 'affiliate-redirect-to',
-                "placeholder"   => 'Redirect to URL',
-                "value"         => $post_meta['affiliate-redirect-to'][0]
-            )
+        echo $this->js_affiliate_html_templates->twig->render(
+            'affiliate_text_input_with_label.twig',
+            [
+                'label'             => 'Redirect To :' ,
+                "id"                => 'affiliate-redirect-to',
+                "name"              => 'affiliate-redirect-to',
+                "placeholder"       => 'Redirect to URL',
+                'value'             => $post_meta['affiliate-redirect-to'][0],
+            ]
         );
+
+
+
+        echo $this->js_affiliate_html_templates->twig->render(
+            'affiliate_source_list_drop_down.twig',
+            [
+                'items'            => $this->js_affiliate_core_functions->js_generate_affiliate_sources_for_drop_down_input(),
+                'value'            => $post_meta['js_aff_source_name'][0],
+            ]
+        );
+
+
+
+
 
 
     }
@@ -77,7 +97,8 @@ class js_affiliate_meta_box
 
             $items = array (
                 'affiliate-title',
-                'affiliate-redirect-to'
+                'affiliate-redirect-to',
+                'js_aff_source_name',
             );
 
             foreach ($items as $item){

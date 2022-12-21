@@ -1,0 +1,52 @@
+<h1>{{page_title}}</h1>
+
+<div class="ui divider"></div>
+
+<table class="ui celled table">
+
+    <thead>
+
+        <tr>
+
+            <th>Order ID</th>
+
+            <th>Order Date</th>
+
+            <th>Order Status</th>
+
+            <th>Price</th>
+
+            <th>Items</th>
+
+            <th>Coupon Code</th>
+
+        </tr>
+
+    </thead>
+
+
+    <tbody>
+
+        {% for order_id,order_value in affiliate_orders %}
+
+            <tr>
+
+                <td data-label="Order ID" >{{order_id}}</td>
+
+                <td data-label="Order Date">{{ attribute(attribute(order_value,'order-data'),'date_created') }}</td>
+
+                <td data-label="Order Status">{{ attribute(attribute(order_value,'order-data'),'status') | title }}</td>
+
+                <td data-label="Price">{{ attribute(attribute(order_value,'order-data'),'total') }}</td>
+
+                <td data-label="Items">{{attribute(order_value,'order-items')}}</td>
+
+                <td data-label="Coupon Code">{{attribute(order_value,'order-coupons')}}</td>
+
+            </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>

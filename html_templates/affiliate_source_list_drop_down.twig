@@ -1,0 +1,27 @@
+<div class="ui fluid search selection dropdown">
+
+    <input type="hidden" name="js_aff_source_name" value="{{ value }}">
+
+    <i class="dropdown icon"></i>
+
+    <div class="default text">Select Source</div>
+
+    <div class="menu">
+
+        {% for source_id,source_value in items %}
+
+            {% if source_id == value %}
+
+                <div class="item selected active" data-value="{{ source_id }}">{{ source_value }}</div>
+
+            {% else %}
+
+                <div class="item" data-value="{{ source_id }}">{{ source_value }}</div>
+
+            {% endif %}
+
+
+        {% endfor %}
+
+    </div>
+</div>
